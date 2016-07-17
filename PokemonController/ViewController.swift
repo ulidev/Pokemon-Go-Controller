@@ -15,6 +15,7 @@ class ViewController: UIViewController, MKMapViewDelegate {
     @IBOutlet weak var mapView: MKMapView!
     var currentLocation:CLLocationCoordinate2D!
     var webServer:GCDWebServer = GCDWebServer()
+    var trackingBarButton : MKUserTrackingBarButtonItem!
     
     enum Direction {
         case UP, DOWN, LEFT, RIGHT;
@@ -34,6 +35,10 @@ class ViewController: UIViewController, MKMapViewDelegate {
         if getSavedLocation() { showMapOnLocation() }
         
         startWebServer()
+        
+        self.trackingBarButton = MKUserTrackingBarButtonItem(mapView: self.mapView);
+        self.too
+        
     }
     
     func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {

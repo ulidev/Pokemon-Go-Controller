@@ -16,17 +16,11 @@ class ViewController: UIViewController, MKMapViewDelegate {
     var currentLocation:CLLocationCoordinate2D!
     var webServer:GCDWebServer = GCDWebServer()
     var trackingBarButton : MKUserTrackingBarButtonItem!
+    var locationManager: CLLocationManager!
+
     
     enum Direction {
         case UP, DOWN, LEFT, RIGHT;
-    }
-    
-    func moveInterval() -> Double {
-        return Double("0.0000\(40 + (arc4random() % 20))")!
-    }
-    
-    func randomNumberBetween(firstNumber: Double, secondNumber: Double) -> Double{
-        return Double(arc4random()) / Double(UINT32_MAX) * abs(firstNumber - secondNumber) + min(firstNumber, secondNumber)
     }
     
     override func viewDidLoad() {
@@ -36,14 +30,21 @@ class ViewController: UIViewController, MKMapViewDelegate {
         
         startWebServer()
         
-        self.trackingBarButton = MKUserTrackingBarButtonItem(mapView: self.mapView);
-        self.too
+        setupMap()
         
     }
     
     func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
         self.currentLocation = mapView.centerCoordinate
         saveLocation()
+    }
+    
+    func moveInterval() -> Double {
+        return Double("0.0000\(40 + (arc4random() % 20))")!
+    }
+    
+    func randomNumberBetween(firstNumber: Double, secondNumber: Double) -> Double{
+        return Double(arc4random()) / Double(UINT32_MAX) * abs(firstNumber - secondNumber) + min(firstNumber, secondNumber)
     }
     
     func changeCurrentLocation(movement:Direction) {
@@ -66,6 +67,10 @@ class ViewController: UIViewController, MKMapViewDelegate {
         
         saveLocation()
         showMapOnLocation()
+    }
+    
+    func mapView(_ mapView: MKMapView, didChange mode: MKUserTrackingMode, animated: Bool) {
+        
     }
     
     func showMapOnLocation() {
@@ -91,6 +96,20 @@ class ViewController: UIViewController, MKMapViewDelegate {
     func putCurrentLocationFromDict(dict: [String:String]) -> Bool {
         self.currentLocation = CLLocationCoordinate2D(latitude: Double(dict["lat"]!)!, longitude: Double(dict["lng"]!)!)
         return true
+    }
+    
+    func setupMap() {
+        self.mapView.showsUserLocation = true
+        self.trackingBarButton = MKUserTrackingBarButtonItem(mapView: self.mapView)
+        self.navigationItem.rightBarButtonItem = self.trackingBarButton
+        if (CLLocationManager.locationServicesEnabled())
+        {
+            self.locationManager = CLLocationManager()
+//            self.locationManager.delegate = self
+            self.locationManager.desiredAccuracy = kCLLocationAccuracyBest
+            self.locationManager.requestAlwaysAuthorization()
+            self.locationManager.startUpdatingLocation()
+        }
     }
     
     @IBAction func moveUp(sender: AnyObject) {

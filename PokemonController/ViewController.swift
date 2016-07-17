@@ -15,6 +15,7 @@ class ViewController: UIViewController, MKMapViewDelegate {
     @IBOutlet weak var mapView: MKMapView!
     var currentLocation:CLLocationCoordinate2D!
     var webServer:GCDWebServer = GCDWebServer()
+    
     enum Direction {
         case UP, DOWN, LEFT, RIGHT;
     }
@@ -36,7 +37,7 @@ class ViewController: UIViewController, MKMapViewDelegate {
     }
     
     func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
-        currentLocation = mapView.centerCoordinate
+        self.currentLocation = mapView.centerCoordinate
         saveLocation()
     }
     
@@ -45,17 +46,17 @@ class ViewController: UIViewController, MKMapViewDelegate {
         
         switch movement {
         case .LEFT:
-            currentLocation.latitude += jitter
-            currentLocation.longitude -= moveInterval()
+            self.currentLocation.latitude += jitter
+            self.currentLocation.longitude -= moveInterval()
         case .RIGHT:
-            currentLocation.latitude += jitter
-            currentLocation.longitude += moveInterval()
+            self.currentLocation.latitude += jitter
+            self.currentLocation.longitude += moveInterval()
         case .UP:
-            currentLocation.latitude += moveInterval()
-            currentLocation.longitude += jitter
+            self.currentLocation.latitude += moveInterval()
+            self.currentLocation.longitude += jitter
         case .DOWN:
-            currentLocation.latitude -= moveInterval()
-            currentLocation.longitude += jitter
+            self.currentLocation.latitude -= moveInterval()
+            self.currentLocation.longitude += jitter
         }
         
         saveLocation()
@@ -79,32 +80,32 @@ class ViewController: UIViewController, MKMapViewDelegate {
     }
     
     func getCurrentLocationDict() -> [String:String] {
-        return ["lat":"\(currentLocation.latitude)", "lng":"\(currentLocation.longitude)"]
+        return ["lat":"\(self.currentLocation.latitude)", "lng":"\(self.currentLocation.longitude)"]
     }
     
     func putCurrentLocationFromDict(dict: [String:String]) -> Bool {
-        currentLocation = CLLocationCoordinate2D(latitude: Double(dict["lat"]!)!, longitude: Double(dict["lng"]!)!)
+        self.currentLocation = CLLocationCoordinate2D(latitude: Double(dict["lat"]!)!, longitude: Double(dict["lng"]!)!)
         return true
     }
     
     @IBAction func moveUp(sender: AnyObject) {
-        changeCurrentLocation(movement: .UP)
+        self.changeCurrentLocation(movement: .UP)
     }
     
     @IBAction func moveDown(sender: AnyObject) {
-        changeCurrentLocation(movement: .DOWN)
+        self.changeCurrentLocation(movement: .DOWN)
     }
     
     @IBAction func moveLeft(sender: AnyObject) {
-        changeCurrentLocation(movement: .LEFT)
+        self.changeCurrentLocation(movement: .LEFT)
     }
     
     @IBAction func moveRight(sender: AnyObject) {
-        changeCurrentLocation(movement: .RIGHT)
+        self.changeCurrentLocation(movement: .RIGHT)
     }
     
     func startWebServer(){
-        webServer.addDefaultHandler(forMethod: "GET", request: GCDWebServerRequest.self, processBlock: {request in
+        self.webServer.addDefaultHandler(forMethod: "GET", request: GCDWebServerRequest.self, processBlock: {request in
             return GCDWebServerDataResponse.init(jsonObject: self.getCurrentLocationDict())
         })
         webServer.start(withPort: 80, bonjourName: "pokemonController")
